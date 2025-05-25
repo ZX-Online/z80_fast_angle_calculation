@@ -1,0 +1,61 @@
+
+	device zxspectrum48
+	
+	org 0x8000
+
+	jp start
+	include "math_angle.a80"
+
+start
+	ld b, 9
+	ld ix, test_values
+	ld iy, result_values
+.lp	ld l, (ix + 0)
+	ld h, (ix + 1)
+	ld e, (ix + 2)
+	ld d, (ix + 3)
+	push bc
+	push ix
+	push iy
+	call math_angle8x8
+	pop iy
+	pop ix
+	pop bc
+	ld (iy + 0), l
+	ld (iy + 1), h
+	inc iy
+	inc iy
+	inc ix
+	inc ix
+	inc ix
+	inc ix
+	djnz .lp
+
+	ret
+
+; x1, y1, x2, y2
+test_values
+	db 0, 17, 103, 0	; 103, -17
+	db 0, 218, 25, 10	; 25, -208
+	db 38, 32, 20, 10	; -18, -22
+	db 161, 87, 30, 20	; -131, -67
+	db 168, 0, 0, 168	; -168, 168
+	db 240, 0, 20, 78	; -220, 78
+	db 56, 10, 30, 85	; -26, 75
+	db 40, 10, 101, 118	; 61, 108
+	db 10, 30, 250, 42	; 240, 12
+
+; This values will be written on a script run
+result_values
+	dw 0	; 0xf960 = 350,68 deg
+	dw 0	; 0xc4c0 = 276,68 deg
+	dw 0	; 0xa400 = 230,63 deg
+	dw 0	; 0x9320 = 206,89 deg
+	dw 0	; 0x6020 = 135,18 deg
+	dw 0	; 0x7240 = 160,66 deg
+	dw 0	; 0x4d80 = 108,98 deg
+	dw 0	; 0x2b60 = 61,00 deg
+	dw 0	; 0x0200 = 2,81 deg
+
+	savesna "angle_test.sna", 0x8000
+
